@@ -1,134 +1,187 @@
 # AI HFT Manipulation Detector
 
-Production-style HFT anomaly detection project with:
+[![CI](https://github.com/Rehan919/hft-ai-detector/actions/workflows/ci.yml/badge.svg)](https://github.com/Rehan919/hft-ai-detector/actions/workflows/ci.yml)
 
-- real baseline training data from the internet
-- a faster real simulation tape for the dashboard
-- a separate real anomaly holdout dataset for testing
-- live Coinbase market streaming
-- second Coinbase live market streaming
-- FastAPI backend
-- React frontend
-- Docker and CI support
+Production-style market surveillance demo that combines:
 
-## Dataset Strategy
+- offline anomaly training on real Coinbase trade data
+- a dramatic replay simulation with injected confirmed manipulation scenarios
+- live public market monitoring for `BTC-USD` and `ETH-USD`
+- a FastAPI backend that serves the built React frontend on a single port
 
-This repo now uses real Coinbase public trade data instead of the old synthetic CSV for the main workflow.
+## Overview
 
-Generated real datasets:
+This project starts from raw trade data with only:
+
+- `timestamp`
+- `price`
+- `volume`
+
+It then builds rolling statistical features, trains an `IsolationForest` baseline, and scores either:
+
+- replayed historical data
+- or live public exchange market data
+
+The simulation mode is intentionally theatrical for demos: it uses real Coinbase history as a base tape, then injects explicit manipulation scenarios that are marked as confirmed simulation cases and elevated to `HIGH_RISK`.
+
+## Modes
+
+### Simulation
+
+- replays a large locally stored BTC-USD tape
+- injects recurring synthetic manipulation windows
+- raises cinematic `HIGH_RISK` alerts for demo purposes
+
+Injected scenarios include:
+
+- `Open Pump`
+- `Flash Dump`
+- `Pump Burst`
+- `Liquidity Vacuum`
+- `Wash Burst`
+- `Closing Frenzy`
+
+### Live
+
+- monitors live Coinbase `BTC-USD`
+- monitors live Coinbase `ETH-USD`
+- analyzes incoming ticks with a more conservative detector configuration
+
+### Holdout Testing
+
+- keeps a separate higher-stress real dataset aside for offline testing
+- avoids mixing that holdout into the default baseline training flow
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A["Coinbase Public Trade Data"] --> B["Feature Engineering"]
+    B --> C["Processed Training Dataset"]
+    C --> D["Isolation Forest"]
+    D --> E["Detector"]
+    E --> F["FastAPI Backend"]
+    F --> G["React Dashboard"]
+
+    H["Real Historical Replay"] --> I["Simulation Stream"]
+    I --> E
+
+    J["Live Coinbase BTC-USD"] --> K["Live Market Service"]
+    K --> E
+
+    L["Live Coinbase ETH-USD"] --> M["Secondary Live Market Service"]
+    M --> E
+```
+
+## Detection Output
+
+The detector emits three operator-facing states:
+
+- `NORMAL`
+- `SUSPICIOUS`
+- `HIGH_RISK`
+
+In live mode, those labels mean "statistically unusual" rather than "manipulation proven."
+
+In simulation mode, injected manipulation cases are explicitly tagged and force a `HIGH_RISK` result so the demo reliably surfaces alerts.
+
+## Project Structure
+
+```text
+backend/    FastAPI app, simulation streaming, live market services, detector logic
+data/       Real datasets, manifests, generated processed files, live captures
+frontend/   React dashboard
+model/      Feature engineering, training, saved model artifacts
+scripts/    Dataset fetching, dramatic simulation builder, holdout scoring
+tests/      Backend and feature tests
+config.py   Central settings for data paths, model tuning, API timings, thresholds
+```
+
+## Real Data Strategy
+
+The repo uses Coinbase Exchange public market data for both offline preparation and live monitoring.
+
+Generated datasets:
 
 - `data/real/coinbase_baseline_training.csv`
-  A calmer real BTC-USD trade window selected for baseline model training.
 - `data/real/coinbase_fast_simulation.csv`
-  A faster-moving real BTC-USD trade window used for simulation mode and a more active chart.
 - `data/real/coinbase_anomaly_holdout.csv`
-  A separate real high-stress holdout window kept aside for anomaly testing.
+- `data/real/dataset_manifest.json`
 
-Processed versions:
+Generated processed outputs:
 
 - `data/processed/training_processed.csv`
 - `data/processed/simulation_processed.csv`
 - `data/processed/anomaly_holdout_processed.csv`
 
-Dataset metadata:
+## Quickstart
 
-- `data/real/dataset_manifest.json`
+### 1. Install backend dependencies
 
-## Main Modes
-
-### Simulation mode
-
-Uses the real fast-simulation dataset so the graph moves quickly and looks more like a trading tape.
-
-### Live mode
-
-Uses live public market data for:
-
-- Coinbase `BTC-USD`
-- Coinbase `ETH-USD`
-
-Each live source is analyzed separately.
-
-### Holdout testing
-
-Uses the separate anomaly holdout dataset so you can test the detector later without overwriting the main training data.
-
-## Core Files
-
-- [config.py](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/config.py)
-- [scripts/fetch_coinbase_datasets.py](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/scripts/fetch_coinbase_datasets.py)
-- [scripts/score_holdout.py](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/scripts/score_holdout.py)
-- [model/features.py](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/model/features.py)
-- [model/train.py](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/model/train.py)
-- [model/train_live.py](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/model/train_live.py)
-- [backend/live_market.py](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/backend/live_market.py)
-- [backend/api.py](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/backend/api.py)
-- [frontend/src/App.jsx](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/frontend/src/App.jsx)
-
-## How Real Data Is Prepared
-
-Run:
-
-```bash
-python scripts/fetch_coinbase_datasets.py
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
-What it does:
+### 2. Install and build the frontend
 
-- fetches recent public BTC-USD trades from Coinbase
-- selects a low-volatility baseline window
-- selects a faster real simulation window
-- selects a higher-stress anomaly holdout window
-- saves raw and processed CSV files
-
-The training and holdout split is derived from real public market data, not fabricated rows.
-
-## Training
-
-Train the baseline model:
-
-```bash
-python model/train.py
+```powershell
+Set-Location frontend
+npm install
+npm run build
+Set-Location ..
 ```
 
-Train the live Coinbase bootstrap model:
+### 3. Generate datasets and simulation tape
 
-```bash
-python model/train_live.py
+```powershell
+.\.venv\Scripts\python.exe scripts\fetch_coinbase_datasets.py
+.\.venv\Scripts\python.exe scripts\build_dramatic_simulation.py
 ```
 
-## Holdout Scoring
+### 4. Train the models
 
-Score the baseline, simulation, and anomaly holdout datasets:
-
-```bash
-python scripts/score_holdout.py
+```powershell
+.\.venv\Scripts\python.exe model\train.py
+.\.venv\Scripts\python.exe model\train_live.py
 ```
 
-## Run Locally
-
-Start the full app from the terminal with one command:
+### 5. Start the app
 
 ```powershell
 .\.venv\Scripts\python.exe -m backend
 ```
 
-The backend serves the built frontend too, so use:
+Open:
 
-- `http://127.0.0.1:8000`
+- [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-## API Endpoints
+## API
+
+Core endpoints:
 
 - `GET /health`
 - `GET /stream`
 - `GET /status`
 - `POST /reset`
+
+Live endpoints:
+
 - `GET /live/health`
 - `GET /live/status`
 - `GET /live/coinbase/health`
 - `GET /live/coinbase/status`
 - `GET /live/secondary/health`
 - `GET /live/secondary/status`
+
+## Testing
+
+Run the automated test suite:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+```
 
 ## Docker
 
@@ -138,28 +191,24 @@ docker compose up --build
 
 ## CI
 
-GitHub Actions workflow:
+GitHub Actions runs:
 
-- [ci.yml](/C:/Users/rehan/OneDrive/Desktop/HFT DETECT/.github/workflows/ci.yml)
+- backend tests
+- frontend production build
 
-## Notes On Market Data Sources
+Workflow file:
 
-The real historical and live datasets are built from Coinbase Exchange public market data:
+- [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
-- public historical trades from the Coinbase Exchange REST trade endpoint
-- public live ticks from the Coinbase Exchange WebSocket ticker channel
+## Important Notes
 
-Reference docs:
+- Coinbase public market data is free to access within documented public rate limits, but usage remains subject to Coinbase terms.
+- Live alerts are anomaly signals, not proof of spoofing or manipulation.
+- Simulation alerts are intentionally exaggerated for demo value.
+- Model artifacts and generated CSV outputs are not committed by default.
 
-- [Coinbase Exchange Get product trades](https://docs.cdp.coinbase.com/exchange/reference/exchangerestapi_getproducttrades)
-- [Coinbase Exchange WebSocket ticker channel](https://docs.cdp.coinbase.com/exchange/websocket-feed/channels)
+## References
 
-## Current Intent
-
-This setup now gives you:
-
-- a real normal dataset for training
-- a real faster dataset for simulation output
-- a separate real stress dataset kept aside for testing
-
-That matches the split you asked for without mixing the anomaly holdout into the default training flow.
+- [Coinbase Exchange REST trades](https://docs.cdp.coinbase.com/exchange/reference/exchangerestapi_getproducttrades)
+- [Coinbase Exchange WebSocket channels](https://docs.cdp.coinbase.com/exchange/websocket-feed/channels)
+- [Coinbase Exchange API overview](https://docs.cdp.coinbase.com/exchange/introduction/welcome)
