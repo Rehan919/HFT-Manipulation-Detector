@@ -14,5 +14,3 @@ data/processed/*.csv
 data/live/*.csv
 model/*.pkl
 model/*.json
-!frontend/dist/
-!frontend/dist/**
