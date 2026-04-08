@@ -1,7 +1,5 @@
 # AI HFT Manipulation Detector
 
-[![CI](https://github.com/Rehan919/hft-ai-detector/actions/workflows/ci.yml/badge.svg)](https://github.com/Rehan919/hft-ai-detector/actions/workflows/ci.yml)
-
 Production-style market surveillance demo that combines:
 
 - offline anomaly training on real Coinbase trade data
@@ -182,77 +180,6 @@ Run the automated test suite:
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
 ```
-
-## Docker
-
-```bash
-docker compose up --build
-```
-
-## Render Deployment
-
-This repo includes [render.yaml](render.yaml) for a single Render web service deployment.
-
-It uses [Dockerfile.backend](Dockerfile.backend) to:
-
-- build the Vite frontend
-- copy the built frontend into the FastAPI app
-- serve everything from one Render URL
-
-Render setup:
-
-1. Push this repo to GitHub.
-2. In Render, create a new Blueprint instance from the repo.
-3. Render will detect `render.yaml` and create the `hft-ai-detector` web service.
-4. After deploy, open the service URL and the app should be available on the same domain.
-
-Notes:
-
-- The app binds to Render's `PORT` automatically.
-- `/health` is configured as the health check path.
-- Live Coinbase feeds remain enabled by default.
-
-## Free Frontend Hosting With Local Backend
-
-If you want a no-card option, you can host only the frontend on Netlify and keep the FastAPI backend running on your own machine.
-
-This repo includes [netlify.toml](netlify.toml) for that setup.
-
-How it works:
-
-1. Deploy the frontend to Netlify from this repo.
-2. Run the backend locally:
-
-```powershell
-.\.venv\Scripts\python.exe -m backend
-```
-
-3. Expose your local backend with a public tunnel such as `cloudflared` or `ngrok`.
-4. In Netlify, set:
-
-```text
-VITE_API_BASE_URL=https://your-public-backend-url.example.com
-```
-
-The frontend already reads that variable in [frontend/src/api.js](frontend/src/api.js).
-
-Important limits:
-
-- the site only works while your computer is on
-- the backend must stay running locally
-- live feeds stop when your local backend stops
-- this is good for demos, not for stable production hosting
-
-## CI
-
-GitHub Actions runs:
-
-- backend tests
-- frontend production build
-
-Workflow file:
-
-- [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
 ## Important Notes
 
