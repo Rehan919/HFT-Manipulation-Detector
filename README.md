@@ -212,6 +212,37 @@ Notes:
 - `/health` is configured as the health check path.
 - Live Coinbase feeds remain enabled by default.
 
+## Free Frontend Hosting With Local Backend
+
+If you want a no-card option, you can host only the frontend on Netlify and keep the FastAPI backend running on your own machine.
+
+This repo includes [netlify.toml](netlify.toml) for that setup.
+
+How it works:
+
+1. Deploy the frontend to Netlify from this repo.
+2. Run the backend locally:
+
+```powershell
+.\.venv\Scripts\python.exe -m backend
+```
+
+3. Expose your local backend with a public tunnel such as `cloudflared` or `ngrok`.
+4. In Netlify, set:
+
+```text
+VITE_API_BASE_URL=https://your-public-backend-url.example.com
+```
+
+The frontend already reads that variable in [frontend/src/api.js](frontend/src/api.js).
+
+Important limits:
+
+- the site only works while your computer is on
+- the backend must stay running locally
+- live feeds stop when your local backend stops
+- this is good for demos, not for stable production hosting
+
 ## CI
 
 GitHub Actions runs:
