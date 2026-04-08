@@ -189,6 +189,29 @@ Run the automated test suite:
 docker compose up --build
 ```
 
+## Render Deployment
+
+This repo includes [render.yaml](render.yaml) for a single Render web service deployment.
+
+It uses [Dockerfile.backend](Dockerfile.backend) to:
+
+- build the Vite frontend
+- copy the built frontend into the FastAPI app
+- serve everything from one Render URL
+
+Render setup:
+
+1. Push this repo to GitHub.
+2. In Render, create a new Blueprint instance from the repo.
+3. Render will detect `render.yaml` and create the `hft-ai-detector` web service.
+4. After deploy, open the service URL and the app should be available on the same domain.
+
+Notes:
+
+- The app binds to Render's `PORT` automatically.
+- `/health` is configured as the health check path.
+- Live Coinbase feeds remain enabled by default.
+
 ## CI
 
 GitHub Actions runs:

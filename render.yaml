@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: hft-ai-detector
+    runtime: docker
+    dockerfilePath: ./Dockerfile.backend
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENABLE_LIVE_MARKET
+        value: true
+      - key: ENABLE_SECONDARY_LIVE
+        value: true

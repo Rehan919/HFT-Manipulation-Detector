@@ -223,16 +223,16 @@ function MarketChart({ events, mode }) {
     <svg viewBox={`0 0 ${width} ${height}`} className="chart" role="img" aria-label="Real-time price and volume chart">
       <defs>
         <linearGradient id="terminalArea" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="rgba(29, 199, 177, 0.24)" />
-          <stop offset="100%" stopColor="rgba(29, 199, 177, 0.01)" />
+          <stop offset="0%" stopColor="rgba(0, 240, 255, 0.2)" />
+          <stop offset="100%" stopColor="rgba(0, 240, 255, 0.0)" />
         </linearGradient>
         <linearGradient id="volumeUp" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="rgba(29, 199, 177, 0.84)" />
-          <stop offset="100%" stopColor="rgba(29, 199, 177, 0.16)" />
+          <stop offset="0%" stopColor="rgba(0, 240, 255, 0.8)" />
+          <stop offset="100%" stopColor="rgba(0, 240, 255, 0.1)" />
         </linearGradient>
         <linearGradient id="volumeDown" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="rgba(255, 107, 107, 0.78)" />
-          <stop offset="100%" stopColor="rgba(255, 107, 107, 0.14)" />
+          <stop offset="0%" stopColor="rgba(255, 0, 85, 0.8)" />
+          <stop offset="100%" stopColor="rgba(255, 0, 85, 0.1)" />
         </linearGradient>
       </defs>
 
