@@ -152,6 +152,8 @@ def live_secondary_status() -> dict[str, Any]:
 
 if FRONTEND_DIST_DIR.exists():
     assets_dir = FRONTEND_DIST_DIR / "assets"
+    API_PREFIXES = ("health", "stream", "status", "reset", "live", "docs", "openapi.json")
+
     if assets_dir.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
@@ -159,9 +161,11 @@ if FRONTEND_DIST_DIR.exists():
     def frontend_index() -> FileResponse:
         return FileResponse(FRONTEND_DIST_DIR / "index.html")
 
-
     @app.get("/{full_path:path}")
     def frontend_catch_all(full_path: str) -> FileResponse:
+        if any(full_path.startswith(prefix) for prefix in API_PREFIXES):
+            raise HTTPException(status_code=404)
+
         requested = FRONTEND_DIST_DIR / full_path
         if requested.exists() and requested.is_file():
             return FileResponse(requested)
