@@ -67,8 +67,8 @@ class DetectionConfig:
 
 @dataclass(frozen=True)
 class ApiConfig:
-    host: str = "127.0.0.1"
-    port: int = 8000
+    host: str = os.getenv("HOST", "127.0.0.1")
+    port: int = int(os.getenv("PORT", "8000"))
     simulator_delay_seconds: float = 0.15
     frontend_live_poll_ms: int = 1000
     frontend_simulation_poll_ms: int = 200
