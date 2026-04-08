@@ -87,7 +87,7 @@ def next_event(dataset: pd.DataFrame, detector: Detector, cursor: int) -> tuple[
     return result, cursor + 1
 
 
-@app.api_route("/health", methods=["GET", "HEAD"])
+@app.get("/health")
 def health() -> dict[str, Any]:
     return {
         "status": "ok",
@@ -155,7 +155,7 @@ if FRONTEND_DIST_DIR.exists():
     if assets_dir.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
-    @app.api_route("/", methods=["GET", "HEAD"])
+    @app.get("/")
     def frontend_index() -> FileResponse:
         return FileResponse(FRONTEND_DIST_DIR / "index.html")
 
