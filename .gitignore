@@ -1,0 +1,16 @@
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+node_modules/
+dist/
+build/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+*.log
+data/processed/*.csv
+data/live/*.csv
+model/*.pkl
+model/*.json

@@ -1,0 +1,27 @@
+{
+  "provider": "coinbase_exchange",
+  "product_id": "BTC-USD",
+  "fetched_trade_count": 24000,
+  "window_size": 5000,
+  "baseline_training": {
+    "path": "C:\\Users\\rehan\\OneDrive\\Desktop\\HFT DETECT\\data\\real\\coinbase_baseline_training.csv",
+    "processed_path": "C:\\Users\\rehan\\OneDrive\\Desktop\\HFT DETECT\\data\\processed\\training_processed.csv",
+    "rows": 5000,
+    "volatility": 1.681800685466225e-05,
+    "max_abs_return": 0.0001411286597243766
+  },
+  "fast_simulation": {
+    "path": "C:\\Users\\rehan\\OneDrive\\Desktop\\HFT DETECT\\data\\real\\coinbase_fast_simulation.csv",
+    "processed_path": "C:\\Users\\rehan\\OneDrive\\Desktop\\HFT DETECT\\data\\processed\\simulation_processed.csv",
+    "rows": 5000,
+    "volatility": 2.0928750953198087e-05,
+    "max_abs_return": 0.00022621291217483908
+  },
+  "anomaly_holdout": {
+    "path": "C:\\Users\\rehan\\OneDrive\\Desktop\\HFT DETECT\\data\\real\\coinbase_anomaly_holdout.csv",
+    "processed_path": "C:\\Users\\rehan\\OneDrive\\Desktop\\HFT DETECT\\data\\processed\\anomaly_holdout_processed.csv",
+    "rows": 5000,
+    "volatility": 3.330925006858059e-05,
+    "max_abs_return": 0.00032865708569163044
+  }
+}
